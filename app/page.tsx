@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 
 import { Suspense, lazy, useState } from 'react';
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChinaMap } from "@/components/china-map"
+<<<<<<< HEAD
 import { Navigation } from "@/components/navigation"
 import { HeritageCarousel } from "@/components/heritage-carousel"
 import { Badge } from "@/components/ui/badge"
@@ -126,6 +128,7 @@ export default function HomePage() {
             <Tabs defaultValue="stories" className="w-full">
               <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
                 <TabsTrigger
+
                     value="stories"
                     className="data-[state=active]:bg-[#8C4A3C] data-[state=active]:text-white"
                 >
@@ -144,7 +147,6 @@ export default function HomePage() {
                   <HeritageCarousel type="stories"/>
                 </Suspense>
               </TabsContent>
-
               <TabsContent value="designs">
                 <Suspense fallback={<div className="h-96 flex items-center justify-center">正在加载热销设计...</div>}>
                   <HeritageCarousel type="designs"/>
@@ -161,7 +163,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                {name: "传统技艺", icon: "/photo/木雕/东阳木雕花窗1.jpg", count: 156},
+   {name: "传统技艺", icon: "/photo/木雕/东阳木雕花窗1.jpg", count: 156},
                 {name: "传统美术", icon: "/photo/刺绣/苏绣花鸟纹1.jpg", count: 89},
                 {name: "传统音乐", icon: "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg", count: 64},
                 {name: "传统戏剧", icon: "/photo/木雕/龙眼木雕1.jpg", count: 42},
@@ -189,6 +191,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold text-[#8C4A3C]">近期活动</h2>
               <Link href="/inheritance" className="text-[#8C4A3C] hover:underline flex items-center">
                 查看全部 <ChevronRight className="h-4 w-4 ml-1"/>
+
               </Link>
             </div>
 

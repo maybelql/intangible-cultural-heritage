@@ -240,6 +240,7 @@ export function InheritanceGraph() {
         .attr("fill", "#666")
         .text((d) => d.level)
 
+
     // Update positions on simulation tick
     simulation.on("tick", () => {
       link
@@ -339,3 +340,4 @@ export function InheritanceGraph() {
       </>
   )
 }
+

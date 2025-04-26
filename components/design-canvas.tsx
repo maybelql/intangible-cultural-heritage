@@ -67,7 +67,7 @@ export const DesignCanvas = memo(forwardRef<
   }
 >((props, ref) => {
   const { defaultProductType = "wallet", defaultColor = "#FFFFFF" } = props;
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [zoom, setZoom] = useState(100)
@@ -443,7 +443,7 @@ export const DesignCanvas = memo(forwardRef<
         } else if (currentTool === "shape") {
           newElement.shape = currentShape
           newElement.color = "#8C4A3C"
-          
+
           // 设置对应的产品图片路径
           if (currentShape === "Wallet") {
             newElement.imagePath = "/design/shape/Wallet.png"
@@ -473,6 +473,7 @@ export const DesignCanvas = memo(forwardRef<
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+
     if (!canvasRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
@@ -556,6 +557,7 @@ export const DesignCanvas = memo(forwardRef<
             ...el,
             x: el.x + dx,
             y: el.y + dy,
+
           };
         }
         return el;

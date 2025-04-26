@@ -314,8 +314,13 @@ export default function FavoritesPage() {
               <h3 className="text-lg font-bold mb-4">联系我们</h3>
               <ul className="space-y-2 text-sm opacity-80">
                 <li>邮箱: contact@xunyi.com</li>
+<<<<<<< HEAD
                 <li>电话: 18670905213</li>
                 <li>地址: xxxxxxxx</li>
+=======
+                <li>电话: 400-123-4567</li>
+                <li>地址: 北京市朝阳区文化产业园</li>
+>>>>>>> 5e23736023ab9fd1ee829eb1f369c6c5a6c84615
               </ul>
             </div>
             <div>

@@ -58,6 +58,7 @@ export function ChinaMap({ selectedProvince: externalSelectedProvince, onSelectP
   return (
     <>
       <div className="relative w-full h-[400px] bg-[#F0E6D9] rounded-lg overflow-hidden">
+
         <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg text-sm shadow-lg">
           <p>点击地图上的印章图标，探索各地非遗</p>
         </div>
@@ -103,4 +104,5 @@ export function ChinaMap({ selectedProvince: externalSelectedProvince, onSelectP
     </>
   )
 }
+
 

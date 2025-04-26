@@ -34,6 +34,7 @@ const nextConfig = {
     parallelServerCompiles: true,
   },
   compress: true,
+
 }
 
 if (userConfig) {

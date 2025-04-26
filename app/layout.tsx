@@ -14,7 +14,6 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
