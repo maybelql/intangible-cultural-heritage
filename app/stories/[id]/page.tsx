@@ -4,10 +4,33 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
 import { Heart, Share, Bookmark, MessageSquare, MapPin, User, Calendar } from "lucide-react"
+import { getHeritageItemById, getRelatedHeritageItems } from "@/data/heritage-items"
 
 export default function StoryDetailPage({ params }: { params: { id: string } }) {
-  // In a real app, we would fetch the story data based on the ID
-  const storyId = params.id
+  // 获取非遗项目详细信息
+  const storyId = parseInt(params.id)
+  const heritageItem = getHeritageItemById(storyId)
+
+  // 如果找不到对应的非遗项目，显示默认内容
+  if (!heritageItem) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#FFFBF5]">
+        <Navigation />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-[#8C4A3C] mb-4">未找到该非遗项目</h1>
+            <p className="mb-6">抱歉，我们找不到ID为 {storyId} 的非遗项目</p>
+            <Link href="/stories">
+              <Button className="bg-[#8C4A3C] hover:bg-[#6D3A2F]">返回非遗故事列表</Button>
+            </Link>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  // 获取相关非遗项目
+  const relatedItems = getRelatedHeritageItems(heritageItem.relatedItems)
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBF5]">
@@ -16,15 +39,15 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative h-[300px] md:h-[400px]">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=400&width=800')] bg-cover bg-center">
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${heritageItem.images.hero}')` }}>
             <div className="absolute inset-0 bg-black/40"></div>
           </div>
           <div className="container relative h-full mx-auto px-4 flex flex-col justify-end pb-8">
             <div className="flex items-center text-white text-sm mb-2">
               <MapPin className="h-4 w-4 mr-1" />
-              <span>江苏省苏州市</span>
+              <span>{heritageItem.province}省{heritageItem.city}</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">苏州刺绣：针尖上的艺术</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{heritageItem.name}：非遗传承的瑰宝</h1>
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-white text-sm">
                 <User className="h-4 w-4 mr-1" />
@@ -72,41 +95,86 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                   </TabsList>
 
                   <TabsContent value="intro" className="space-y-4">
-                    <p>
-                      苏州刺绣，简称"苏绣"，是中国传统刺绣中的一个重要流派，以其精细、雅致、光洁、平整、色彩协调、构图合理而著称于世。苏绣的历史可以追溯到春秋战国时期，距今已有2000多年的历史。
-                    </p>
+                    <p>{heritageItem.description}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-                      <Image
-                        src="/placeholder.svg?height=300&width=400"
-                        alt="苏州刺绣作品"
-                        width={400}
-                        height={300}
-                        className="rounded-lg"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=300&width=400"
-                        alt="苏州刺绣作品"
-                        width={400}
-                        height={300}
-                        className="rounded-lg"
-                      />
+                      {heritageItem.images.gallery.slice(0, 2).map((image, index) => (
+                        <Image
+                          key={index}
+                          src={image}
+                          alt={`${heritageItem.name}作品${index + 1}`}
+                          width={400}
+                          height={300}
+                          className="rounded-lg"
+                        />
+                      ))}
                     </div>
                     <p>
-                      苏绣以其"平、细、密、匀、和、顺"的特点闻名于世。苏绣的针法多达40余种，主要有平针、乱针、套针、滚针、接针等。苏绣的题材广泛，包括人物、山水、花鸟、鱼虫等，尤以双面绣最为精妙，正反两面均可观赏，针法一致，图案相同，色彩一致。
+                      {heritageItem.name}是中国非物质文化遗产的重要组成部分，承载着丰富的历史文化内涵和艺术价值。
+                      通过对{heritageItem.name}的保护和传承，我们可以更好地了解中国传统文化的魅力和智慧。
                     </p>
-                    <p>2006年5月20日，苏绣经国务院批准列入第一批国家级非物质文化遗产名录。</p>
+                    <p>
+                      {heritageItem.name}已被列入国家级非物质文化遗产名录，是中华民族宝贵的文化遗产。
+                    </p>
                   </TabsContent>
 
-                  <TabsContent value="history">
-                    <p>历史渊源内容将在这里展示...</p>
+                  <TabsContent value="history" className="space-y-4">
+                    <p>{heritageItem.history}</p>
+                    {heritageItem.images.gallery[2] && (
+                      <div className="my-6">
+                        <Image
+                          src={heritageItem.images.gallery[2]}
+                          alt={`${heritageItem.name}历史图片`}
+                          width={800}
+                          height={400}
+                          className="rounded-lg w-full"
+                        />
+                      </div>
+                    )}
+                    <p>
+                      {heritageItem.name}的历史发展反映了中国传统文化的演变过程，是中华民族智慧的结晶。
+                      通过了解{heritageItem.name}的历史，我们可以更好地理解中国传统文化的发展脉络。
+                    </p>
                   </TabsContent>
 
-                  <TabsContent value="technique">
-                    <p>技艺流程内容将在这里展示...</p>
+                  <TabsContent value="technique" className="space-y-4">
+                    <p>{heritageItem.technique}</p>
+                    {heritageItem.images.gallery[0] && (
+                      <div className="my-6">
+                        <Image
+                          src={heritageItem.images.gallery[0]}
+                          alt={`${heritageItem.name}技艺展示`}
+                          width={800}
+                          height={400}
+                          className="rounded-lg w-full"
+                        />
+                      </div>
+                    )}
+                    <p>
+                      {heritageItem.name}的技艺流程复杂，需要工匠具备丰富的经验和精湛的技艺。
+                      这些传统技艺的传承面临着挑战，需要我们共同努力，保护和传承这些宝贵的文化遗产。
+                    </p>
                   </TabsContent>
 
-                  <TabsContent value="inheritor">
-                    <p>传承人内容将在这里展示...</p>
+                  <TabsContent value="inheritor" className="space-y-4">
+                    <p>
+                      <strong>代表性传承人：</strong> {heritageItem.inheritor}
+                    </p>
+                    {heritageItem.images.gallery[1] && (
+                      <div className="my-6">
+                        <Image
+                          src={heritageItem.images.gallery[1]}
+                          alt={`${heritageItem.name}传承人`}
+                          width={800}
+                          height={400}
+                          className="rounded-lg w-full"
+                        />
+                      </div>
+                    )}
+                    <p>
+                      传承人是非物质文化遗产保护的关键。他们不仅掌握着传统技艺的精髓，
+                      还肩负着将这些技艺传授给下一代的重任。通过支持和鼓励传承人的工作，
+                      我们可以确保这些宝贵的文化遗产得以延续。
+                    </p>
                   </TabsContent>
                 </Tabs>
               </div>
@@ -134,14 +202,15 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                     </Button>
                   </div>
                   <Image
-                    src="/placeholder.svg?height=400&width=800&text=传承人采访视频"
-                    alt="传承人采访视频"
+                    src={heritageItem.images.gallery[0]}
+                    alt={`${heritageItem.name}传承人采访视频`}
                     fill
                     className="rounded-lg object-cover"
                   />
                 </div>
                 <p className="mt-4 text-sm text-gray-600">
-                  苏绣传承人沈寿（1874-1921），字瑞卿，号瑶圃，江苏吴县人。她是中国近代著名的刺绣艺术家，被誉为"刺绣圣手"。在本视频中，我们采访了沈寿的再传弟子，了解苏绣技艺的传承历程。
+                  {heritageItem.name}传承人{heritageItem.inheritor.split('，')[0]}，是国家级非物质文化遗产代表性传承人。
+                  在本视频中，我们采访了这位传承人，了解{heritageItem.name}技艺的传承历程和未来发展。
                 </p>
               </div>
 
@@ -222,25 +291,21 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
               <div className="bg-white rounded-lg border border-[#D9C7B8] p-4 mb-6">
                 <h3 className="font-bold text-lg mb-4 text-[#8C4A3C]">相关故事</h3>
                 <div className="space-y-4">
-                  {[...Array(3)].map((_, index) => (
-                    <Link href={`/stories/${index + 10}`} key={index} className="flex gap-3 group">
+                  {relatedItems.map((item) => (
+                    <Link href={`/stories/${item.id}`} key={item.id} className="flex gap-3 group">
                       <div className="relative w-20 h-20 flex-shrink-0">
                         <Image
-                          src={`/placeholder.svg?height=80&width=80&text=${index + 1}`}
-                          alt={`相关故事${index + 1}`}
+                          src={item.images.gallery[0] || item.images.hero}
+                          alt={item.name}
                           fill
                           className="rounded-md object-cover"
                         />
                       </div>
                       <div>
                         <h4 className="font-medium text-sm group-hover:text-[#8C4A3C] line-clamp-2">
-                          {
-                            ["南京云锦：金丝织就的华美", "景德镇青花瓷：千年窑火不熄", "杭州丝织：丝路明珠的璀璨"][
-                              index
-                            ]
-                          }
+                          {item.name}：{item.province}的非遗瑰宝
                         </h4>
-                        <p className="text-xs text-gray-500 mt-1">阅读量 {1200 + index * 300}</p>
+                        <p className="text-xs text-gray-500 mt-1">阅读量 {1000 + item.id * 123}</p>
                       </div>
                     </Link>
                   ))}
@@ -251,22 +316,22 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
               <div className="bg-white rounded-lg border border-[#D9C7B8] p-4">
                 <h3 className="font-bold text-lg mb-4 text-[#8C4A3C]">设计推荐</h3>
                 <div className="space-y-4">
-                  {[...Array(2)].map((_, index) => (
-                    <Link href={`/design/${index + 1}`} key={index} className="block group">
+                  {[0, 1].map((index) => (
+                    <Link href={`/design/${heritageItem.id * 10 + index}`} key={index} className="block group">
                       <div className="relative aspect-[4/3] w-full mb-2">
                         <Image
-                          src={`/placeholder.svg?height=150&width=200&text=设计${index + 1}`}
-                          alt={`设计推荐${index + 1}`}
+                          src={heritageItem.images.gallery[index] || heritageItem.images.hero}
+                          alt={`${heritageItem.name}设计产品${index + 1}`}
                           fill
                           className="rounded-md object-cover"
                         />
                       </div>
                       <h4 className="font-medium text-sm group-hover:text-[#8C4A3C]">
-                        {["苏绣图案丝巾", "苏绣元素手机壳"][index]}
+                        {heritageItem.name}元素{["丝巾", "手机壳"][index]}
                       </h4>
                       <div className="flex justify-between items-center mt-1">
                         <span className="text-sm font-medium text-[#8C4A3C]">¥{199 + index * 50}</span>
-                        <span className="text-xs text-gray-500">已售 {120 + index * 50}</span>
+                        <span className="text-xs text-gray-500">已售 {120 + heritageItem.id * 10}</span>
                       </div>
                     </Link>
                   ))}

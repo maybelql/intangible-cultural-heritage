@@ -127,7 +127,17 @@ export default function StoriesPage() {
                     <Card className="overflow-hidden border-[#D9C7B8] hover:shadow-md transition-shadow">
                       <div className="relative h-48">
                         <Image
-                          src={`/placeholder.svg?height=200&width=300&text=非遗故事${index + 1}`}
+                          src={[
+                            "/photo/刺绣/苏绣花鸟纹1.jpg",
+                            "/photo/木雕/东阳木雕花窗1.jpg",
+                            "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg",
+                            "/photo/刺绣/粤绣牡丹1.jpg",
+                            "/photo/木雕/龙眼木雕1.jpg",
+                            "/photo/木雕/黄杨木雕人物1.jpg",
+                            "/photo/刺绣/刺绣-如意纹1.jpg",
+                            "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg",
+                            "/photo/木雕/东阳木雕花窗1.jpg",
+                          ][index]}
                           alt={`非遗故事${index + 1}`}
                           fill
                           className="object-cover"

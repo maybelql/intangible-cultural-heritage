@@ -48,7 +48,12 @@ export default function InheritancePage() {
                       <Card className="overflow-hidden border-[#D9C7B8]">
                         <div className="relative h-48">
                           <Image
-                            src={`/placeholder.svg?height=200&width=400&text=活动${index + 1}`}
+                            src={[
+                              "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg",
+                              "/photo/刺绣/苏绣花鸟纹1.jpg",
+                              "/photo/木雕/黄杨木雕人物1.jpg",
+                              "/photo/木雕/东阳木雕花窗1.jpg"
+                            ][index]}
                             alt={`活动${index + 1}`}
                             fill
                             className="object-cover"
@@ -100,7 +105,10 @@ export default function InheritancePage() {
                   <div className="flex flex-col md:flex-row">
                     <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto">
                       <Image
-                        src={`/placeholder.svg?height=200&width=200&text=传承人${index + 1}`}
+                        src={[
+                          "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg",
+                          "/photo/刺绣/粤绣牡丹1.jpg"
+                        ][index]}
                         alt={`传承人${index + 1}`}
                         fill
                         className="object-cover"

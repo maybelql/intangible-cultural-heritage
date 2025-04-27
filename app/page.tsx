@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { MapPin, Clock, ChevronRight } from "lucide-react"
@@ -8,7 +11,54 @@ import { InteractiveChinaMap } from "@/components/interactive-china-map"
 import { HeritageCarousel } from "@/components/heritage-carousel"
 import { Navigation } from "@/components/navigation"
 
+// Define the heritage item interface
+interface HeritageItem {
+  id: number
+  name: string
+  category: string
+}
+
+// Define the heritage items data structure
+const heritageItems: { [province: string]: HeritageItem[] } = {
+  江苏: [
+    { id: 1, name: "南京云锦", category: "传统技艺" },
+    { id: 2, name: "苏州刺绣", category: "传统技艺" },
+    { id: 3, name: "昆曲", category: "传统戏剧" },
+  ],
+  浙江: [
+    { id: 4, name: "西湖龙井茶艺", category: "传统技艺" },
+    { id: 5, name: "杭州丝织技艺", category: "传统技艺" },
+  ],
+  四川: [
+    { id: 6, name: "川剧变脸", category: "传统戏剧" },
+    { id: 7, name: "蜀绣", category: "传统技艺" },
+  ],
+  北京: [
+    { id: 8, name: "景泰蓝", category: "传统技艺" },
+    { id: 9, name: "京剧", category: "传统戏剧" },
+  ],
+  上海: [
+    { id: 10, name: "海派剪纸", category: "传统美术" },
+  ],
+  广东: [
+    { id: 11, name: "粤绣", category: "传统技艺" },
+    { id: 12, name: "粤剧", category: "传统戏剧" },
+  ],
+  福建: [
+    { id: 13, name: "福州脱胎漆器", category: "传统技艺" },
+    { id: 14, name: "闽剧", category: "传统戏剧" },
+  ],
+};
+
 export default function HomePage() {
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
+
+  // Function to handle province click
+  const handleProvinceClick = (province: string) => {
+    setSelectedProvince(province);
+    setShowDetails(true);
+  };
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBF5]">
       <Navigation />
@@ -48,32 +98,80 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-center mb-8 text-[#8C4A3C]">非遗数字地图</h2>
             <div className="bg-[#F9F5F1] rounded-xl p-6 shadow-sm">
               <InteractiveChinaMap />
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {["江苏", "浙江", "福建", "广东", "四川"].map((province) => (
-                  <Card key={province} className="overflow-hidden border-[#D9C7B8] bg-white/80 backdrop-blur-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <MapPin className="h-4 w-4 text-[#8C4A3C] mr-2" />
-                          <span className="font-medium">{province}</span>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                {Object.keys(heritageItems).map((provinceName) => {
+                  const items = heritageItems[provinceName];
+                  return (
+                    <Card key={provinceName} className="overflow-hidden border-[#D9C7B8] bg-white/80 backdrop-blur-sm min-w-[140px]">
+                      <CardContent className="p-4 flex flex-col">
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center">
+                            <MapPin className="h-4.5 w-4.5 text-[#8C4A3C] mr-2.5" />
+                            <span className="font-medium text-base">{provinceName}</span>
+                          </div>
+                          <span className="text-sm text-gray-500 ml-3">{items.length}项</span>
                         </div>
-                        <span className="text-sm text-gray-500">12项</span>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-600">
-                        <Link
-                          href={`/stories?province=${province}`}
-                          className="flex items-center hover:text-[#8C4A3C] transition-colors"
-                        >
-                          查看详情 <ChevronRight className="h-3 w-3 ml-1" />
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        <div className="mt-3 text-sm text-gray-600 w-full">
+                          <button
+                            onClick={() => handleProvinceClick(provinceName)}
+                            className="flex items-center hover:text-[#8C4A3C] transition-colors w-full text-left"
+                          >
+                            查看详情 <ChevronRight className="h-3.5 w-3.5 ml-2" />
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Heritage Items Dialog */}
+        {showDetails && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg w-[90%] max-w-md max-h-[80vh] overflow-hidden shadow-xl">
+              <div className="p-4 border-b bg-[#F9F5F1]">
+                <h2 className="text-center text-xl font-bold text-[#8C4A3C]">
+                  {selectedProvince} 非遗名录
+                </h2>
+              </div>
+              <div className="overflow-y-auto max-h-[calc(80vh-100px)] p-4">
+                {selectedProvince &&
+                  heritageItems[selectedProvince]?.map((item) => (
+                    <Link
+                      href={`/stories/${item.id}`}
+                      key={item.id}
+                      className="block p-3 rounded-lg bg-[#F9F5F1] hover:bg-[#F0E6D9] transition-colors mb-2"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs px-2 py-1 bg-[#8C4A3C]/10 text-[#8C4A3C] rounded-full">
+                          {item.category}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+
+                {/* If no data for the province */}
+                {selectedProvince && !heritageItems[selectedProvince] && (
+                  <div className="text-center py-4 text-gray-500">
+                    暂无{selectedProvince}的非遗数据
+                  </div>
+                )}
+              </div>
+              <div className="p-4 border-t bg-[#F9F5F1] flex justify-end">
+                <button
+                  onClick={() => setShowDetails(false)}
+                  className="px-4 py-2 bg-[#8C4A3C] text-white rounded-lg hover:bg-[#6D3A2F] transition-colors"
+                >
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Popular Recommendations */}
         <section className="py-12 bg-[#F9F5F1]">
