@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 
 interface HeritageItem {
@@ -13,7 +13,11 @@ interface HeritageItems {
   [province: string]: HeritageItem[]
 }
 
-export function InteractiveChinaMap() {
+interface InteractiveChinaMapProps {
+  onProvinceClick?: (province: string) => void;
+}
+
+export function InteractiveChinaMap({ onProvinceClick }: InteractiveChinaMapProps) {
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null)
   const [showDetails, setShowDetails] = useState(false)
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -51,6 +55,19 @@ export function InteractiveChinaMap() {
     // 可以添加更多省份的数据
   }
 
+  // 使用 useCallback 包装 handleProvinceClick 函数，确保它只在依赖项变化时才重新创建
+  const handleProvinceClick = useCallback((province: string) => {
+    // 设置选中的省份
+    setSelectedProvince(province)
+    setShowDetails(true)
+
+    // 如果该省份有非遗项目数据，并且父组件提供了点击处理函数，则调用它
+    if (heritageItems[province] && onProvinceClick) {
+      onProvinceClick(province)
+    }
+    // 如果该省份没有非遗项目数据，则只显示内部弹窗，不调用父组件的处理函数
+  }, [heritageItems, onProvinceClick]);
+
   useEffect(() => {
     // 这里我们将加载您的HTML地图文件内容
     if (mapContainerRef.current) {
@@ -81,12 +98,9 @@ export function InteractiveChinaMap() {
         window.removeEventListener('message', handleMessage)
       }
     }
-  }, [])
+  }, [handleProvinceClick])
 
-  const handleProvinceClick = (province: string) => {
-    setSelectedProvince(province)
-    setShowDetails(true)
-  }
+
 
   return (
     <>

@@ -97,7 +97,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-8 text-[#8C4A3C]">非遗数字地图</h2>
             <div className="bg-[#F9F5F1] rounded-xl p-6 shadow-sm">
-              <InteractiveChinaMap />
+              <InteractiveChinaMap onProvinceClick={handleProvinceClick} />
               <div className="mt-4 flex flex-wrap justify-center gap-3">
                 {Object.keys(heritageItems).map((provinceName) => {
                   const items = heritageItems[provinceName];

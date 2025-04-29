@@ -24,7 +24,7 @@
             cursor: pointer; /* 鼠标变为手型，表示可点击 */
         }
 
-        
+
 
         /* SVG元素样式 */
         svg {
@@ -35,6 +35,65 @@
 
 
     </style>
+    <script>
+        // 当文档加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有省份路径元素
+            const provinces = document.querySelectorAll('path[id]');
+
+            // 省份ID映射表，将地图中的省份ID映射到heritageItems中的键
+            const provinceMap = {
+                "北京市": "北京",
+                "天津市": "天津",
+                "河北省": "河北",
+                "山西省": "山西",
+                "内蒙古自治区": "内蒙古",
+                "辽宁省": "辽宁",
+                "吉林省": "吉林",
+                "黑龙江省": "黑龙江",
+                "上海市": "上海",
+                "江苏省": "江苏",
+                "浙江省": "浙江",
+                "安徽省": "安徽",
+                "福建省": "福建",
+                "江西省": "江西",
+                "山东省": "山东",
+                "河南省": "河南",
+                "湖北省": "湖北",
+                "湖南省": "湖南",
+                "广东省": "广东",
+                "广西壮族自治区": "广西",
+                "海南省": "海南",
+                "重庆市": "重庆",
+                "四川省": "四川",
+                "贵州省": "贵州",
+                "云南省": "云南",
+                "西藏自治区": "西藏",
+                "陕西省": "陕西",
+                "甘肃省": "甘肃",
+                "青海省": "青海",
+                "宁夏回族自治区": "宁夏",
+                "新疆维吾尔自治区": "新疆",
+                "台湾省": "台湾",
+                "香港特别行政区": "香港",
+                "澳门特别行政区": "澳门"
+            };
+
+            // 为每个省份添加点击事件
+            provinces.forEach(function(province) {
+                province.addEventListener('click', function() {
+                    // 获取省份ID
+                    const provinceId = province.getAttribute('id');
+
+                    // 将省份ID映射为简化名称
+                    const simpleName = provinceMap[provinceId] || provinceId;
+
+                    // 向父页面发送消息，包含省份名称
+                    window.parent.postMessage({ province: simpleName }, '*');
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
