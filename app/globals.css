@@ -92,3 +92,15 @@ body {
     @apply bg-background text-foreground;
   }
 }
+/* SVG China Map Styles */
+.province-path {
+  pointer-events: fill;
+  stroke: #747569;
+  stroke-width: 1;
+  stroke-opacity: 0.6;
+}
+
+.province-shadow {
+  filter: url(#drop-shadow);
+}
+
