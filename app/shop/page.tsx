@@ -2,8 +2,11 @@ import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Navigation } from "@/components/navigation"
+import { getAllShopItems } from "@/data/shop-items"
 
 export default function ShopPage() {
+  // 获取所有商品数据
+  const shopItems = getAllShopItems();
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBF5]">
       <Navigation />
@@ -72,57 +75,8 @@ export default function ShopPage() {
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-8 text-[#8C4A3C]">精选商品</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "牡丹刺绣丝巾",
-                  description: "传统牡丹纹样，纯手工刺绣",
-                  image: "/photo/刺绣/刺绣-牡丹花1.jpg",
-                  price: "¥1280",
-                  sales: "已售 156",
-                  link: "/shop/1",
-                },
-                {
-                  title: "龙纹木雕摆件",
-                  description: "传统龙纹雕刻，精美工艺",
-                  image: "/photo/木雕/木雕-龙纹1.jpg",
-                  price: "¥980",
-                  sales: "已售 89",
-                  link: "/shop/2",
-                },
-                {
-                  title: "粉彩花鸟茶具",
-                  description: "景德镇粉彩工艺，精美花鸟",
-                  image: "/photo/陶瓷纹样/陶瓷纹样-粉彩花鸟1.jpg",
-                  price: "¥680",
-                  sales: "已售 64",
-                  link: "/shop/3",
-                },
-                {
-                  title: "蝴蝶刺绣团扇",
-                  description: "传统蝴蝶纹样，精美刺绣",
-                  image: "/photo/刺绣/刺绣-蝴蝶1.jpg",
-                  price: "¥880",
-                  sales: "已售 42",
-                  link: "/shop/4",
-                },
-                {
-                  title: "人物木雕摆件",
-                  description: "传统人物雕刻，精湛工艺",
-                  image: "/photo/木雕/木雕-人物1.jpg",
-                  price: "¥1280",
-                  sales: "已售 38",
-                  link: "/shop/5",
-                },
-                {
-                  title: "青花缠枝莲茶具",
-                  description: "传统青花工艺，精美纹样",
-                  image: "/photo/陶瓷纹样/陶瓷纹样-青花缠枝莲1.jpg",
-                  price: "¥980",
-                  sales: "已售 29",
-                  link: "/shop/6",
-                },
-              ].map((item) => (
-                <Link key={item.title} href={item.link}>
+              {shopItems.map((item) => (
+                <Link key={item.id} href={`/shop/${item.id}`}>
                   <Card className="overflow-hidden border-[#D9C7B8] hover:shadow-lg transition-shadow">
                     <div className="relative h-48 w-full">
                       <Image
@@ -150,4 +104,4 @@ export default function ShopPage() {
       </main>
     </div>
   )
-} 
+}

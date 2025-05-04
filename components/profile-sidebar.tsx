@@ -16,7 +16,7 @@ export function ProfileSidebar({ activePage }: ProfileSidebarProps) {
         <div className="flex flex-col items-center mb-6">
           <div className="relative w-24 h-24 mb-4">
             <Image
-              src="/placeholder.svg?height=100&width=100&text=头像"
+              src="/photo/刺绣/苏绣花鸟纹1.jpg"
               alt="用户头像"
               fill
               className="rounded-full object-cover border-4 border-[#F0E6D9]"

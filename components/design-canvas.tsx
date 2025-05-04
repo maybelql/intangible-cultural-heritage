@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { forwardRef, useImperativeHandle, useMemo, useCallback, memo } from "react"
+import { CozeAPI } from '@coze/api';
 
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,6 @@ import {
   Shirt,
   Download,
 } from "lucide-react"
-import { CozeAPI, generatePreview } from '@/lib/coze-api';
 import { optimizeImage, debounce, throttle } from '@/lib/memory-utils';
 
 interface CanvasElement {
@@ -57,14 +57,14 @@ const apiClient = new CozeAPI({
 });
 
 export const DesignCanvas = memo(forwardRef<
-  {
-    exportCanvasToBase64: () => string | null;
-    updatePreview: (productType?: "wallet" | "shirt", color?: string) => Promise<string | null>;
-  }, 
-  {
-    defaultProductType?: "wallet" | "shirt";
-    defaultColor?: string;
-  }
+    {
+      exportCanvasToBase64: () => string | null;
+      updatePreview: (productType?: "wallet" | "shirt", color?: string) => Promise<string | null>;
+    },
+    {
+      defaultProductType?: "wallet" | "shirt";
+      defaultColor?: string;
+    }
 >((props, ref) => {
   const { defaultProductType = "wallet", defaultColor = "#FFFFFF" } = props;
 
@@ -90,45 +90,45 @@ export const DesignCanvas = memo(forwardRef<
   ])
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null)
   const [libraryItems, setLibraryItems] = useState<{ id: string; name: string; category: string; type: string; path: string }[]>([
-    { 
-      id: "p1", 
-      name: "青花瓷纹样", 
-      category: "patterns", 
+    {
+      id: "p1",
+      name: "青花瓷纹样",
+      category: "patterns",
       type: "image",
       path: "/design/青花瓷纹样.png"
     },
-    { 
-      id: "p2", 
-      name: "龙纹图案", 
-      category: "patterns", 
+    {
+      id: "p2",
+      name: "龙纹图案",
+      category: "patterns",
       type: "image",
       path: "/design/龙纹图案.jpg"
     },
-    { 
-      id: "p3", 
-      name: "牡丹花纹", 
-      category: "patterns", 
+    {
+      id: "p3",
+      name: "牡丹花纹",
+      category: "patterns",
       type: "image",
       path: "/design/牡丹花纹.jpg"
     },
-    { 
-      id: "m1", 
-      name: "现代几何", 
-      category: "modern", 
+    {
+      id: "m1",
+      name: "现代几何",
+      category: "modern",
       type: "image",
       path: "/assets/library/modern/geometric.png"
     },
-    { 
-      id: "m2", 
-      name: "抽象线条", 
-      category: "modern", 
+    {
+      id: "m2",
+      name: "抽象线条",
+      category: "modern",
       type: "image",
       path: "/assets/library/modern/abstract.png"
     },
-    { 
-      id: "m3", 
-      name: "简约图形", 
-      category: "modern", 
+    {
+      id: "m3",
+      name: "简约图形",
+      category: "modern",
       type: "image",
       path: "/assets/library/modern/minimal.png"
     }
@@ -137,14 +137,14 @@ export const DesignCanvas = memo(forwardRef<
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
 
   // 将过滤逻辑放入useMemo，避免每次渲染时重新计算
-  const filteredLibraryItems = useMemo(() => 
-    libraryItems.filter(
-      (item) =>
-        item.category === currentCategory &&
-        (searchTerm === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (!selectedFilter || filterOptions.find((f) => f.id === selectedFilter)?.name.includes(item.name))
-    ),
-  [libraryItems, currentCategory, searchTerm, selectedFilter, filterOptions]);
+  const filteredLibraryItems = useMemo(() =>
+          libraryItems.filter(
+              (item) =>
+                  item.category === currentCategory &&
+                  (searchTerm === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                  (!selectedFilter || filterOptions.find((f) => f.id === selectedFilter)?.name.includes(item.name))
+          ),
+      [libraryItems, currentCategory, searchTerm, selectedFilter, filterOptions]);
 
   // 将事件处理函数转换为useCallback
   const handleZoomIn = useCallback(() => {
@@ -200,7 +200,7 @@ export const DesignCanvas = memo(forwardRef<
     // 创建分层元素数组
     const backgroundElements: CanvasElement[] = [];
     const normalElements: CanvasElement[] = [];
-    
+
     // 根据元素类型分配到不同数组
     elements.forEach((element) => {
       // 钱包元素放入背景层
@@ -215,7 +215,7 @@ export const DesignCanvas = memo(forwardRef<
     // 绘制单个元素的函数
     const drawElement = (element: CanvasElement, isSelected: boolean) => {
       ctx.save();
-      
+
       // 应用元素透明度
       ctx.globalAlpha = element.opacity / 100;
 
@@ -232,11 +232,11 @@ export const DesignCanvas = memo(forwardRef<
       } else if (element.type === "image") {
         // 使用imagePath属性或从content生成路径
         const imagePath = element.imagePath || `/design/${element.content}.png`;
-        
+
         // 创建图片对象
         const img = new Image();
         img.src = imagePath;
-        
+
         // 图片加载完成后绘制
         if (img.complete) {
           // 图片已经加载完成
@@ -261,7 +261,7 @@ export const DesignCanvas = memo(forwardRef<
         if (element.imagePath) {
           const img = new Image();
           img.src = element.imagePath;
-          
+
           if (img.complete) {
             // 图片已经加载完成
             ctx.drawImage(img, element.x, element.y, element.width, element.height);
@@ -301,10 +301,10 @@ export const DesignCanvas = memo(forwardRef<
         ctx.fillRect(element.x + element.width - handleSize / 2, element.y - handleSize / 2, handleSize, handleSize);
         ctx.fillRect(element.x - handleSize / 2, element.y + element.height - handleSize / 2, handleSize, handleSize);
         ctx.fillRect(
-          element.x + element.width - handleSize / 2,
-          element.y + element.height - handleSize / 2,
-          handleSize,
-          handleSize
+            element.x + element.width - handleSize / 2,
+            element.y + element.height - handleSize / 2,
+            handleSize,
+            handleSize
         );
 
         // 旋转控制点
@@ -313,10 +313,10 @@ export const DesignCanvas = memo(forwardRef<
         ctx.lineTo(element.x + element.width / 2, element.y);
         ctx.stroke();
         ctx.fillRect(
-          element.x + element.width / 2 - handleSize / 2,
-          element.y - 20 - handleSize / 2,
-          handleSize,
-          handleSize
+            element.x + element.width / 2 - handleSize / 2,
+            element.y - 20 - handleSize / 2,
+            handleSize,
+            handleSize
         );
       }
 
@@ -347,68 +347,68 @@ export const DesignCanvas = memo(forwardRef<
     if (selectedElement) {
       const handleSize = 8;
       const halfHandleSize = handleSize / 2;
-      
+
       // 检查四个角的控制点
       // 左上角
       if (
-        Math.abs(x - selectedElement.x) <= halfHandleSize + 2 &&
-        Math.abs(y - selectedElement.y) <= halfHandleSize + 2
+          Math.abs(x - selectedElement.x) <= halfHandleSize + 2 &&
+          Math.abs(y - selectedElement.y) <= halfHandleSize + 2
       ) {
         setIsResizing(true);
         setResizeDirection("top-left");
-        setResizeStart({ 
-          x, 
-          y, 
-          width: selectedElement.width, 
-          height: selectedElement.height 
+        setResizeStart({
+          x,
+          y,
+          width: selectedElement.width,
+          height: selectedElement.height
         });
         return;
       }
-      
+
       // 右上角
       if (
-        Math.abs(x - (selectedElement.x + selectedElement.width)) <= halfHandleSize + 2 &&
-        Math.abs(y - selectedElement.y) <= halfHandleSize + 2
+          Math.abs(x - (selectedElement.x + selectedElement.width)) <= halfHandleSize + 2 &&
+          Math.abs(y - selectedElement.y) <= halfHandleSize + 2
       ) {
         setIsResizing(true);
         setResizeDirection("top-right");
-        setResizeStart({ 
-          x, 
-          y, 
-          width: selectedElement.width, 
-          height: selectedElement.height 
+        setResizeStart({
+          x,
+          y,
+          width: selectedElement.width,
+          height: selectedElement.height
         });
         return;
       }
-      
+
       // 左下角
       if (
-        Math.abs(x - selectedElement.x) <= halfHandleSize + 2 &&
-        Math.abs(y - (selectedElement.y + selectedElement.height)) <= halfHandleSize + 2
+          Math.abs(x - selectedElement.x) <= halfHandleSize + 2 &&
+          Math.abs(y - (selectedElement.y + selectedElement.height)) <= halfHandleSize + 2
       ) {
         setIsResizing(true);
         setResizeDirection("bottom-left");
-        setResizeStart({ 
-          x, 
-          y, 
-          width: selectedElement.width, 
-          height: selectedElement.height 
+        setResizeStart({
+          x,
+          y,
+          width: selectedElement.width,
+          height: selectedElement.height
         });
         return;
       }
-      
+
       // 右下角
       if (
-        Math.abs(x - (selectedElement.x + selectedElement.width)) <= halfHandleSize + 2 &&
-        Math.abs(y - (selectedElement.y + selectedElement.height)) <= halfHandleSize + 2
+          Math.abs(x - (selectedElement.x + selectedElement.width)) <= halfHandleSize + 2 &&
+          Math.abs(y - (selectedElement.y + selectedElement.height)) <= halfHandleSize + 2
       ) {
         setIsResizing(true);
         setResizeDirection("bottom-right");
-        setResizeStart({ 
-          x, 
-          y, 
-          width: selectedElement.width, 
-          height: selectedElement.height 
+        setResizeStart({
+          x,
+          y,
+          width: selectedElement.width,
+          height: selectedElement.height
         });
         return;
       }
@@ -486,7 +486,7 @@ export const DesignCanvas = memo(forwardRef<
       let newHeight = selectedElement.height;
       let newX = selectedElement.x;
       let newY = selectedElement.y;
-      
+
       // 根据调整方向计算新的尺寸和位置
       switch (resizeDirection) {
         case "top-left":
@@ -510,11 +510,11 @@ export const DesignCanvas = memo(forwardRef<
           newHeight = resizeStart.height + (y - resizeStart.y);
           break;
       }
-      
+
       // 确保最小尺寸
       newWidth = Math.max(20, newWidth);
       newHeight = Math.max(20, newHeight);
-      
+
       // 更新元素
       const updatedElements = elements.map(el => {
         if (el.id === selectedElement.id) {
@@ -528,9 +528,9 @@ export const DesignCanvas = memo(forwardRef<
         }
         return el;
       });
-      
+
       setElements(updatedElements);
-      
+
       // 更新选中元素以便UI实时反映
       setSelectedElement({
         ...selectedElement,
@@ -539,10 +539,10 @@ export const DesignCanvas = memo(forwardRef<
         width: newWidth,
         height: newHeight
       });
-      
+
       // 重绘画布
       drawCanvas();
-      
+
       return;
     }
 
@@ -562,9 +562,9 @@ export const DesignCanvas = memo(forwardRef<
         }
         return el;
       });
-      
+
       setElements(updatedElements);
-      
+
       // 更新选中元素以便UI实时反映
       setSelectedElement({
         ...selectedElement,
@@ -573,7 +573,7 @@ export const DesignCanvas = memo(forwardRef<
       });
 
       setDragStart({ x, y });
-      
+
       // 重绘画布
       drawCanvas();
     }
@@ -592,10 +592,10 @@ export const DesignCanvas = memo(forwardRef<
     // 立即从元素数组中移除选中元素
     const updatedElements = elements.filter((el) => el.id !== selectedElement.id);
     setElements(updatedElements);
-    
+
     // 清除选中状态
     setSelectedElement(null);
-    
+
     // 立即重绘画布，确保视觉上的即时反馈
     drawCanvas();
   }, [selectedElement, elements, drawCanvas]);
@@ -613,15 +613,15 @@ export const DesignCanvas = memo(forwardRef<
       }
       return el;
     });
-    
+
     setElements(updatedElements);
-    
+
     // 更新选中元素
     setSelectedElement({
       ...selectedElement,
       rotation: (selectedElement.rotation + degrees) % 360,
     });
-    
+
     // 重绘画布
     drawCanvas();
   }, [selectedElement, elements, drawCanvas]);
@@ -639,15 +639,15 @@ export const DesignCanvas = memo(forwardRef<
       }
       return el;
     });
-    
+
     setElements(updatedElements);
-    
+
     // 更新选中元素
     setSelectedElement({
       ...selectedElement,
       opacity: value[0],
     });
-    
+
     // 重绘画布
     drawCanvas();
   }
@@ -663,7 +663,7 @@ export const DesignCanvas = memo(forwardRef<
       height: 100,
       rotation: 0,
       opacity: 100,
-      imagePath: item.path, 
+      imagePath: item.path,
       content: item.name
     };
 
@@ -677,38 +677,72 @@ export const DesignCanvas = memo(forwardRef<
     return canvasRef.current.toDataURL('image/png');
   };
 
+  const exportCanvasToBlob = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!canvasRef.current) {
+        reject(new Error("Canvas not found"));
+        return;
+      }
+
+      canvasRef.current.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error("Failed to convert canvas to blob"));
+          return;
+        }
+
+        // 1. 上传文件
+        apiClient.files.upload({ file: blob })
+            .then((uploadRes) => {
+              // 2. 创建工作流运行
+              return apiClient.workflows.runs.create({
+                workflow_id: '7496864510776639523',
+                parameters: {
+                  user: {
+                    file_id: uploadRes.id,
+                  },
+                  content: "非遗钱包",
+                  image_prompt: "生成一款湘绣的非遗钱包",
+                  title: "非遗",
+                },
+              });
+            })
+            .then((workflowRes) => {
+              // 3. 解析API响应
+              // 解析嵌套的data字段
+              const responseData = JSON.parse(workflowRes.data);
+              const imageUrl = responseData.image;
+
+              if (!imageUrl) {
+                throw new Error("未找到图像URL");
+              }
+
+              resolve(imageUrl);
+            })
+            .catch(reject);
+      }, 'image/png');
+    });
+  };
+
   // 更新预览
   const updatePreview = async (productType = defaultProductType, color = defaultColor) => {
-    const base64Data = exportCanvasToBase64();
-    if (!base64Data) return null;
-    
-    setPreviewImage(null); // 清空旧预览图
-    setIsGeneratingPreview(true); // 设置生成中状态
-    
+    setPreviewImage(null);
+    setIsGeneratingPreview(true);
+
     try {
-      // 使用外部优化函数，而不是内联实现
-      const optimizedImage = await optimizeImage(base64Data, 1200, 0.8);
-      
-      // 调用API生成预览图
-      const imageUrl = await generatePreview(
-        optimizedImage,
-        productType,
-        color
-      );
-      
-      // 设置预览图，清理旧图像引用
-      if (previewImage) {
-        URL.revokeObjectURL(previewImage);
+      // 直接使用导出的Blob获取图片URL
+      const imageUrl = await exportCanvasToBlob();
+
+      if (imageUrl) {
+        setPreviewImage(imageUrl);
       }
-      setPreviewImage(imageUrl);
-      
+
       return imageUrl;
     } catch (error) {
       console.error('生成预览失败:', error);
       alert('生成预览图片失败，请重试');
       return null;
     } finally {
-      setIsGeneratingPreview(false); // 无论成功失败，都关闭生成中状态
+      setIsGeneratingPreview(false);
     }
   };
 
@@ -716,14 +750,14 @@ export const DesignCanvas = memo(forwardRef<
   const preloadImages = () => {
     // 预加载形状图片
     const shapeImages = ["/design/shape/Wallet.png", "/design/shirt.png"];
-    
+
     // 使用图像优化策略
     const preloadOptions = {
       priority: true,
       fetchPriority: 'high',
       type: 'image/webp' // 优先使用WebP格式
     };
-    
+
     // 使用Link预加载
     shapeImages.forEach(src => {
       const link = document.createElement('link');
@@ -731,12 +765,12 @@ export const DesignCanvas = memo(forwardRef<
       link.as = 'image';
       link.href = src;
       document.head.appendChild(link);
-      
+
       // 同时创建图像对象确保加载到内存
       const img = new Image();
       img.src = src;
     });
-    
+
     // 延迟加载非关键图像
     setTimeout(() => {
       // 预加载库项目图片
@@ -755,7 +789,7 @@ export const DesignCanvas = memo(forwardRef<
     // 每当元素数组变化时重绘
     drawCanvas();
   }, [elements]);
-  
+
   // 在useEffect中添加拖拽状态监听
   useEffect(() => {
     // 移动结束后进行一次完整绘制
@@ -777,14 +811,14 @@ export const DesignCanvas = memo(forwardRef<
 
     // Initial draw
     drawCanvas();
-    
+
     // 添加窗口大小变化时的重绘
     const handleResize = () => {
       drawCanvas();
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -793,7 +827,7 @@ export const DesignCanvas = memo(forwardRef<
   // 更新光标样式，以便在调整大小时显示正确的光标
   const getCursorStyle = () => {
     if (!selectedElement) return "default";
-    
+
     if (isResizing) {
       switch (resizeDirection) {
         case "top-left":
@@ -806,7 +840,7 @@ export const DesignCanvas = memo(forwardRef<
           return "default";
       }
     }
-    
+
     return isDragging ? "grabbing" : "grab";
   };
 
@@ -827,279 +861,279 @@ export const DesignCanvas = memo(forwardRef<
   }));
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex flex-col lg:flex-row gap-4 h-full">
-        {/* Left sidebar - Tools and filters */}
-        <div className="w-full lg:w-64 flex-shrink-0 bg-white rounded-lg border border-[#D9C7B8] p-4">
-          <h3 className="font-medium text-sm mb-4">设计工具</h3>
+      <div className="h-full flex flex-col">
+        <div className="flex flex-col lg:flex-row gap-4 h-full">
+          {/* Left sidebar - Tools and filters */}
+          <div className="w-full lg:w-64 flex-shrink-0 bg-white rounded-lg border border-[#D9C7B8] p-4">
+            <h3 className="font-medium text-sm mb-4">设计工具</h3>
 
-          <div className="grid grid-cols-4 gap-2 mb-6">
-            <Button
-              variant={currentTool === "select" ? "default" : "outline"}
-              size="icon"
-              className={`h-10 w-full ${currentTool === "select" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-              onClick={() => setCurrentTool("select")}
-            >
-              <MousePointer className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={currentTool === "text" ? "default" : "outline"}
-              size="icon"
-              className={`h-10 w-full ${currentTool === "text" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-              onClick={() => setCurrentTool("text")}
-            >
-              <Type className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={currentTool === "image" ? "default" : "outline"}
-              size="icon"
-              className={`h-10 w-full ${currentTool === "image" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-              onClick={() => setCurrentTool("image")}
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={currentTool === "shape" ? "default" : "outline"}
-              size="icon"
-              className={`h-10 w-full ${currentTool === "shape" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-              onClick={() => setCurrentTool("shape")}
-            >
-              <Layers className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {currentTool === "shape" && (
-            <div className="mb-6">
-              <h3 className="font-medium text-sm mb-2">类别</h3>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  variant={currentShape === "Wallet" ? "default" : "outline"}
+            <div className="grid grid-cols-4 gap-2 mb-6">
+              <Button
+                  variant={currentTool === "select" ? "default" : "outline"}
                   size="icon"
-                  className={`h-10 w-full ${currentShape === "Wallet" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-                  onClick={() => setCurrentShape("Wallet")}
-                >
-                  <Wallet className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={currentShape === "Shirt" ? "default" : "outline"}
+                  className={`h-10 w-full ${currentTool === "select" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                  onClick={() => setCurrentTool("select")}
+              >
+                <MousePointer className="h-4 w-4" />
+              </Button>
+              <Button
+                  variant={currentTool === "text" ? "default" : "outline"}
                   size="icon"
-                  className={`h-10 w-full ${currentShape === "Shirt" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
-                  onClick={() => setCurrentShape("Shirt")}
-                >
-                  <Shirt className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="mb-6">
-            <h3 className="font-medium text-sm mb-2">元素库</h3>
-
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="搜索元素..."
-                className="pl-10 border-[#D9C7B8] focus-visible:ring-[#8C4A3C]"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+                  className={`h-10 w-full ${currentTool === "text" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                  onClick={() => setCurrentTool("text")}
+              >
+                <Type className="h-4 w-4" />
+              </Button>
+              <Button
+                  variant={currentTool === "image" ? "default" : "outline"}
+                  size="icon"
+                  className={`h-10 w-full ${currentTool === "image" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                  onClick={() => setCurrentTool("image")}
+              >
+                <ImageIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                  variant={currentTool === "shape" ? "default" : "outline"}
+                  size="icon"
+                  className={`h-10 w-full ${currentTool === "shape" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                  onClick={() => setCurrentTool("shape")}
+              >
+                <Layers className="h-4 w-4" />
+              </Button>
             </div>
 
-            <Tabs value={currentCategory} onValueChange={setCurrentCategory}>
-              <TabsList className="bg-[#F0E6D9] w-full grid grid-cols-2">
-                <TabsTrigger
-                  value="patterns"
-                  className="data-[state=active]:bg-[#8C4A3C] data-[state=active]:text-white"
-                >
-                  传统纹样
-                </TabsTrigger>
-                <TabsTrigger value="modern" className="data-[state=active]:bg-[#8C4A3C] data-[state=active]:text-white">
-                  现代元素
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <div className="mt-4">
-              <h4 className="text-xs text-gray-500 mb-2">筛选</h4>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {filterOptions
-                  .filter((option) => option.category === currentCategory)
-                  .map((option) => (
+            {currentTool === "shape" && (
+                <div className="mb-6">
+                  <h3 className="font-medium text-sm mb-2">类别</h3>
+                  <div className="grid grid-cols-3 gap-2">
                     <Button
-                      key={option.id}
-                      variant="outline"
-                      size="sm"
-                      className={`text-xs h-7 ${
-                        selectedFilter === option.id ? "bg-[#8C4A3C] text-white border-[#8C4A3C]" : "border-[#D9C7B8]"
-                      }`}
-                      onClick={() => setSelectedFilter(selectedFilter === option.id ? null : option.id)}
+                        variant={currentShape === "Wallet" ? "default" : "outline"}
+                        size="icon"
+                        className={`h-10 w-full ${currentShape === "Wallet" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                        onClick={() => setCurrentShape("Wallet")}
                     >
-                      {option.name}
+                      <Wallet className="h-4 w-4" />
                     </Button>
-                  ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
-              {filteredLibraryItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#F9F5F1] rounded-lg p-2 aspect-square cursor-pointer hover:bg-[#F0E6D9] transition-colors"
-                  onClick={() => handleAddLibraryItem(item)}
-                >
-                  <div className="relative w-full h-full flex items-center justify-center text-xs text-center">
-                    {item.name}
+                    <Button
+                        variant={currentShape === "Shirt" ? "default" : "outline"}
+                        size="icon"
+                        className={`h-10 w-full ${currentShape === "Shirt" ? "bg-[#8C4A3C]" : "border-[#D9C7B8]"}`}
+                        onClick={() => setCurrentShape("Shirt")}
+                    >
+                      <Shirt className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-              ))}
-
-              {filteredLibraryItems.length === 0 && (
-                <div className="col-span-2 py-4 text-center text-sm text-gray-500">没有找到匹配的元素</div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Main canvas area */}
-        <div className="flex-1 flex flex-col">
-          {/* Toolbar */}
-          <div className="flex justify-between items-center mb-2 p-2 bg-white rounded-lg border border-[#D9C7B8]">
-            <div className="flex items-center space-x-2">
-              {selectedElement?.type === "text" && (
-                <>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Bold className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Italic className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Underline className="h-4 w-4" />
-                  </Button>
-                  <div className="h-6 w-px bg-gray-300 mx-1"></div>
-                </>
-              )}
-
-              {selectedElement && (
-                <>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(-15)}>
-                    <RotateCw className="h-4 w-4 -scale-x-100" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(15)}>
-                    <RotateCw className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-red-500 hover:bg-red-50" 
-                    onClick={handleDeleteElement}
-                    title="删除元素"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <span className="text-xs w-10 text-center">{zoom}%</span>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Canvas */}
-          <div
-            ref={containerRef}
-            className="flex-1 relative bg-white rounded-lg border border-[#D9C7B8] overflow-hidden"
-          >
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full"
-              style={{
-                transform: `scale(${zoom / 100})`,
-                transformOrigin: "center center",
-                cursor: getCursorStyle(),
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            />
-
-            {elements.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="text-gray-400 text-sm">从左侧拖拽元素到画布上进行设计</span>
-              </div>
             )}
+
+            <div className="mb-6">
+              <h3 className="font-medium text-sm mb-2">元素库</h3>
+
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                    placeholder="搜索元素..."
+                    className="pl-10 border-[#D9C7B8] focus-visible:ring-[#8C4A3C]"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <Tabs value={currentCategory} onValueChange={setCurrentCategory}>
+                <TabsList className="bg-[#F0E6D9] w-full grid grid-cols-2">
+                  <TabsTrigger
+                      value="patterns"
+                      className="data-[state=active]:bg-[#8C4A3C] data-[state=active]:text-white"
+                  >
+                    传统纹样
+                  </TabsTrigger>
+                  <TabsTrigger value="modern" className="data-[state=active]:bg-[#8C4A3C] data-[state=active]:text-white">
+                    现代元素
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              <div className="mt-4">
+                <h4 className="text-xs text-gray-500 mb-2">筛选</h4>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {filterOptions
+                      .filter((option) => option.category === currentCategory)
+                      .map((option) => (
+                          <Button
+                              key={option.id}
+                              variant="outline"
+                              size="sm"
+                              className={`text-xs h-7 ${
+                                  selectedFilter === option.id ? "bg-[#8C4A3C] text-white border-[#8C4A3C]" : "border-[#D9C7B8]"
+                              }`}
+                              onClick={() => setSelectedFilter(selectedFilter === option.id ? null : option.id)}
+                          >
+                            {option.name}
+                          </Button>
+                      ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+                {filteredLibraryItems.map((item) => (
+                    <div
+                        key={item.id}
+                        className="bg-[#F9F5F1] rounded-lg p-2 aspect-square cursor-pointer hover:bg-[#F0E6D9] transition-colors"
+                        onClick={() => handleAddLibraryItem(item)}
+                    >
+                      <div className="relative w-full h-full flex items-center justify-center text-xs text-center">
+                        {item.name}
+                      </div>
+                    </div>
+                ))}
+
+                {filteredLibraryItems.length === 0 && (
+                    <div className="col-span-2 py-4 text-center text-sm text-gray-500">没有找到匹配的元素</div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Element Controls (only shown when an element is selected) */}
-          {selectedElement && (
-            <div className="mt-2 p-2 bg-white rounded-lg border border-[#D9C7B8]">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Move className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(90)}>
-                    <RotateCw className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 text-red-500 hover:bg-red-50" 
-                  onClick={handleDeleteElement}
-                >
-                  <Trash2 className="h-4 w-4" />
+          {/* Main canvas area */}
+          <div className="flex-1 flex flex-col">
+            {/* Toolbar */}
+            <div className="flex justify-between items-center mb-2 p-2 bg-white rounded-lg border border-[#D9C7B8]">
+              <div className="flex items-center space-x-2">
+                {selectedElement?.type === "text" && (
+                    <>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Bold className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Italic className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Underline className="h-4 w-4" />
+                      </Button>
+                      <div className="h-6 w-px bg-gray-300 mx-1"></div>
+                    </>
+                )}
+
+                {selectedElement && (
+                    <>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(-15)}>
+                        <RotateCw className="h-4 w-4 -scale-x-100" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(15)}>
+                        <RotateCw className="h-4 w-4" />
+                      </Button>
+                      <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500 hover:bg-red-50"
+                          onClick={handleDeleteElement}
+                          title="删除元素"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                <span className="text-xs w-10 text-center">{zoom}%</span>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
+                  <ZoomIn className="h-4 w-4" />
                 </Button>
               </div>
-
-              <div className="mt-2">
-                <div className="text-xs text-gray-500 mb-1">透明度</div>
-                <Slider value={[selectedElement.opacity]} max={100} step={1} onValueChange={handleOpacityChange} />
-              </div>
             </div>
-          )}
 
-          {/* Preview Section */}
-          <div className="mt-4 p-4 bg-white rounded-lg border border-[#D9C7B8]">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-medium text-sm">预览效果</h3>
-              <Button 
-                variant="outline"
-                size="sm"
-                className="text-xs"
-                onClick={() => updatePreview()}
-                disabled={isGeneratingPreview}
-              >
-                {isGeneratingPreview ? "生成中..." : "更新预览"}
-              </Button>
-            </div>
-            <div className="aspect-square bg-[#F9F5F1] rounded-lg p-4 flex items-center justify-center">
-              {isGeneratingPreview ? (
-                <div className="text-center">
-                  <div className="w-8 h-8 border-4 border-[#8C4A3C] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                  <span className="text-gray-500">生成预览中...</span>
-                </div>
-              ) : previewImage ? (
-                <img 
-                  src={previewImage} 
-                  alt="画布预览" 
-                  className="max-w-full max-h-full object-contain"
-                />
-              ) : (
-                <span className="text-gray-400 text-sm">点击更新预览按钮查看效果</span>
+            {/* Canvas */}
+            <div
+                ref={containerRef}
+                className="flex-1 relative bg-white rounded-lg border border-[#D9C7B8] overflow-hidden"
+            >
+              <canvas
+                  ref={canvasRef}
+                  className="w-full h-full"
+                  style={{
+                    transform: `scale(${zoom / 100})`,
+                    transformOrigin: "center center",
+                    cursor: getCursorStyle(),
+                  }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+              />
+
+              {elements.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-gray-400 text-sm">从左侧拖拽元素到画布上进行设计</span>
+                  </div>
               )}
+            </div>
+
+            {/* Element Controls (only shown when an element is selected) */}
+            {selectedElement && (
+                <div className="mt-2 p-2 bg-white rounded-lg border border-[#D9C7B8]">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Move className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRotateElement(90)}>
+                        <RotateCw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-500 hover:bg-red-50"
+                        onClick={handleDeleteElement}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="mt-2">
+                    <div className="text-xs text-gray-500 mb-1">透明度</div>
+                    <Slider value={[selectedElement.opacity]} max={100} step={1} onValueChange={handleOpacityChange} />
+                  </div>
+                </div>
+            )}
+
+            {/* Preview Section */}
+            <div className="mt-4 p-4 bg-white rounded-lg border border-[#D9C7B8]">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium text-sm">预览效果</h3>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => updatePreview()}
+                    disabled={isGeneratingPreview}
+                >
+                  {isGeneratingPreview ? "生成中..." : "更新预览"}
+                </Button>
+              </div>
+              <div className="aspect-square bg-[#F9F5F1] rounded-lg p-4 flex items-center justify-center">
+                {isGeneratingPreview ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-[#8C4A3C] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <span className="text-gray-500">生成预览中...</span>
+                    </div>
+                ) : previewImage ? (
+                    <img
+                        src={previewImage}
+                        alt="画布预览"
+                        className="max-w-full max-h-full object-contain"
+                    />
+                ) : (
+                    <span className="text-gray-400 text-sm">点击更新预览按钮查看效果</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }));

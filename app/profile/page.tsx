@@ -31,7 +31,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center mb-6">
                   <div className="relative w-24 h-24 mb-4">
                     <Image
-                      src="/placeholder.svg?height=100&width=100&text=头像"
+                      src="/photo/刺绣/苏绣花鸟纹1.jpg"
                       alt="用户头像"
                       fill
                       className="rounded-full object-cover border-4 border-[#F0E6D9]"
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                         <div className="flex flex-col sm:flex-row gap-4">
                           <div className="relative w-20 h-20 flex-shrink-0">
                             <Image
-                              src={`/placeholder.svg?height=80&width=80&text=商品${index + 1}`}
+                              src={index === 0 ? "/photo/陶瓷纹样/陶瓷纹样-景泰蓝云纹1.jpg" : "/photo/刺绣/蜀绣龙凤1.jpg"}
                               alt={`商品${index + 1}`}
                               fill
                               className="rounded-md object-cover"
@@ -225,7 +225,13 @@ export default function ProfilePage() {
                     <Card key={index} className="overflow-hidden border-[#D9C7B8]">
                       <div className="relative aspect-square">
                         <Image
-                          src={`/placeholder.svg?height=200&width=200&text=设计${index + 1}`}
+                          src={
+                            index === 0
+                              ? "/photo/木雕/木雕-龙纹1.jpg"
+                              : index === 1
+                                ? "/photo/刺绣/刺绣-凤凰1.jpg"
+                                : "/photo/陶瓷纹样/陶瓷纹样-书法.jpg"
+                          }
                           alt={`设计${index + 1}`}
                           fill
                           className="object-cover"
